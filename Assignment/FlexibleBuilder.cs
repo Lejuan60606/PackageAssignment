@@ -1,5 +1,4 @@
-﻿
-using Assignment.Data;
+﻿using Assignment.Data;
 using Assignment.Models;
 using Microsoft.Extensions.Logging;
 
@@ -7,25 +6,25 @@ namespace Assignment
 {
     internal class FlexibleBuilder
     {
-        private readonly LeeegoooService _legoService;
+        private readonly LeeegoooService _leeegoooService;
         private readonly ILogger<FlexibleBuilder> _logger;
 
-        public FlexibleBuilder(LeeegoooService legoService, ILogger<FlexibleBuilder> logger)
+        public FlexibleBuilder(LeeegoooService leeegoooService, ILogger<FlexibleBuilder> logger)
         {
-            _legoService = legoService;
+            _leeegoooService = leeegoooService;
             _logger = logger;
         }
 
         public async Task<List<Set>> GetBuildableSetsWithColorSubstitutionAsync(string username, CancellationToken cancellationToken)
         {
-            var user = await _legoService.GetUserByUsernameAsync(username, cancellationToken);
+            var user = await _leeegoooService.GetUserByUsernameAsync(username, cancellationToken);
             if (user == null)
             {
                 _logger.LogError($"User {username} not found");
                 return new List<Set>();
             }
 
-            var sets = await _legoService.GetAllSetsAsync(cancellationToken);
+            var sets = await _leeegoooService.GetAllSetsAsync(cancellationToken);
             var buildableSets = new List<Set>();
 
             foreach (var set in sets)

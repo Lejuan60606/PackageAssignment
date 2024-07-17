@@ -2,7 +2,6 @@
 using Assignment.Data;
 using Assignment.Models;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
 namespace Assignment
 {
@@ -17,7 +16,7 @@ namespace Assignment
             _logger = logger;
         }
 
-        public async Task<int> GetMaxPieceCountForCustomBuildAsync(string username)
+        public async Task<List<(int DesignId, int ColourId)>?> GetMaxPieceCountForCustomBuildAsync(string username)
         {
             try
             {
@@ -25,20 +24,18 @@ namespace Assignment
                 if (users == null || users.Count == 0)
                 {
                     _logger.LogError("No users found");
-                    return 0;
+                    return null;
                 }
 
                 var pieceCount = CountPiecesAcrossUsers(users);
                 var commonPieces = FindCommonPieces(pieceCount, users.Count);
 
-                var maxPieceCount = commonPieces.Count;
-
-                return maxPieceCount;
+                return commonPieces;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while calculating the maximum piece count for the custom build");
-                return 0;
+                return null;
             }
         }
 

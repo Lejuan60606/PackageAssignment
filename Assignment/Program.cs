@@ -35,21 +35,21 @@ public class Program
             })
             .Build();
 
-        var legoService = host.Services.GetRequiredService<LeeegoooService>();
+        var leeegoooService = host.Services.GetRequiredService<LeeegoooService>();
         var logger = host.Services.GetRequiredService<ILogger<Program>>();
         var setChecker = new SetChecker();
         var cancellationTokenSource = new CancellationTokenSource();
 
         try
         {
-            var user = await legoService.GetUserByUsernameAsync("brickfan35", cancellationTokenSource.Token);
+            var user = await leeegoooService.GetUserByUsernameAsync("brickfan35", cancellationTokenSource.Token);
             if (user == null)
             {
                 logger.LogError("Failed to fetch user data for 'brickfan35'");
                 return;
             }
 
-            var sets = await legoService.GetAllSetsAsync(cancellationTokenSource.Token);
+            var sets = await leeegoooService.GetAllSetsAsync(cancellationTokenSource.Token);
             if (sets == null)
             {
                 logger.LogError("Failed to fetch sets data");

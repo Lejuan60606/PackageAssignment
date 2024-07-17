@@ -6,33 +6,33 @@ namespace Assignment
 {
     internal class CollaborativeBuilder
     {
-        private readonly LeeegoooService _legoService;
+        private readonly LeeegoooService _leeegoooService;
         private readonly ILogger<CollaborativeBuilder> _logger;
 
-        public CollaborativeBuilder(LeeegoooService legoService, ILogger<CollaborativeBuilder> logger)
+        public CollaborativeBuilder(LeeegoooService leeegoooService, ILogger<CollaborativeBuilder> logger)
         {
-            _legoService = legoService;
+            _leeegoooService = leeegoooService;
             _logger = logger;
         }
 
         public async Task<List<User>> FindCollaboratorsAsync(string username, string setName, CancellationToken cancellationToken)
         {
 
-            var user = await _legoService.GetUserByUsernameAsync(username, cancellationToken);
+            var user = await _leeegoooService.GetUserByUsernameAsync(username, cancellationToken);
             if (user == null)
             {
                 _logger.LogError($"User {username} not found");
                 return new List<User>();
             }
 
-            var set = await _legoService.GetSetByIdAsync(setName, cancellationToken);
+            var set = await _leeegoooService.GetSetByIdAsync(setName, cancellationToken);
             if (set == null)
             {
                 _logger.LogError($"Set {setName} not found");
                 return new List<User>();
             }
 
-            var allUsers = await _legoService.GetAllUsersAsync(cancellationToken);
+            var allUsers = await _leeegoooService.GetAllUsersAsync(cancellationToken);
             var collaborators = new List<User>();
 
             foreach (var potentialCollaborator in allUsers)

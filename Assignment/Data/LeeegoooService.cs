@@ -3,7 +3,6 @@ using Assignment.Models;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 using System.Text.Json;
-using System.Threading;
 
 namespace Assignment.Data
 {
@@ -35,10 +34,19 @@ namespace Assignment.Data
                     return null;
                 }
 
-                var user = JsonSerializer.Deserialize<User>(response.Content, new JsonSerializerOptions
+                User? user = null;
+                try
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    user = JsonSerializer.Deserialize<User>(response.Content, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                }
+                catch (JsonException ex)
+                {
+                    _logger.LogError(ex, "Error deserializing user data from response content.");
+                }
+
 
                 return user;
             }
