@@ -40,20 +40,92 @@ namespace Assignment
 
         private bool CanBuildSetWithColorSubstitution(Inventory userInventory, List<SetPiece> setPieces)
         {
-            var userPiecesGroupedByDesign = userInventory.Pieces.GroupBy(piece => piece.DesignId)
-                                                                .ToDictionary(g => g.Key, g => g.ToList());
+            var userPiecesGroupedByDesign = userInventory.Pieces
+                .GroupBy(piece => piece.DesignId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+      
+            if (CanBuildSetExactly(userPiecesGroupedByDesign, setPieces))
+            {
+                return true;
+            }
+
+            var colorMapping = new Dictionary<int, int>();
 
             foreach (var setPiece in setPieces)
             {
-                if (!userPiecesGroupedByDesign.ContainsKey(setPiece.DesignId))
+                if (!userPiecesGroupedByDesign.TryGetValue(setPiece.DesignId, out var userPieces))
                 {
                     return false;
                 }
 
-                var userPieces = userPiecesGroupedByDesign[setPiece.DesignId];
-                var requiredQuantity = setPiece.Quantity;
+                var userPiecesGroupedByColor = userPieces
+                    .GroupBy(p => p.ColourId)
+                    .ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
 
-                foreach (var userPiece in userPieces)
+                var requiredQuantity = setPiece.Quantity;
+                var setPieceColor = setPiece.ColourId;
+
+                if (userPiecesGroupedByColor.TryGetValue(setPieceColor, out var availableQuantity))
+                {
+                    if (availableQuantity >= requiredQuantity)
+                    {
+                        continue;
+                    }
+
+                    requiredQuantity -= availableQuantity;
+                }
+
+                var colorSubstituted = false;
+                foreach (var userPieceColor in userPiecesGroupedByColor.Keys)
+                {
+                    if (colorMapping.TryGetValue(setPieceColor, out var mappedColor))
+                    {
+                        if (mappedColor != userPieceColor)
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (colorMapping.ContainsValue(userPieceColor))
+                        {
+                            continue; //the color is already used 
+                        }
+
+                        colorMapping[setPieceColor] = userPieceColor;
+                    }
+
+                    if (userPiecesGroupedByColor[userPieceColor] >= requiredQuantity)
+                    {
+                        colorSubstituted = true;
+                        break;
+                    }
+
+                    requiredQuantity -= userPiecesGroupedByColor[userPieceColor];
+                }
+
+                if (!colorSubstituted && requiredQuantity > 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool CanBuildSetExactly(Dictionary<int, List<Piece>> userPiecesGroupedByDesign, List<SetPiece> setPieces)
+        {
+            foreach (var setPiece in setPieces)
+            {
+                if (!userPiecesGroupedByDesign.TryGetValue(setPiece.DesignId, out var userPieces))
+                {
+                    return false;
+                }
+
+                var requiredQuantity = setPiece.Quantity;
+                var matchingPieces = userPieces.Where(p => p.ColourId == setPiece.ColourId);
+
+                foreach (var userPiece in matchingPieces)
                 {
                     if (userPiece.Quantity >= requiredQuantity)
                     {
@@ -73,4 +145,5 @@ namespace Assignment
             return true;
         }
     }
+
 }
